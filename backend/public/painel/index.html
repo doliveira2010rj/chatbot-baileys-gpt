@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Atendente</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Atendimentos</h1>
+    <div id="chat"></div>
+    <input type="text" id="numero" placeholder="Número do cliente">
+    <input type="text" id="mensagem" placeholder="Mensagem">
+    <button onclick="enviar()">Enviar</button>
+
+    <script>
+        const socket = io();
+
+        socket.on('mensagem_cliente', data => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<p><b>${data.numero}</b>: ${data.texto} <br><i>IA:</i> ${data.resposta}</p>`;
+        });
+
+        socket.on('transferir_para_atendente', data => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<p><b>${data.numero}</b> foi transferido para atendimento humano.</p>`;
+        });
+
+        function enviar() {
+            const numero = document.getElementById('numero').value;
+            const mensagem = document.getElementById('mensagem').value;
+            socket.emit('responder_cliente', { numero, mensagem });
+        }
+    </script>
+</body>
+</html>
